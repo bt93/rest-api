@@ -15,9 +15,11 @@ app.use(morgan('dev'));
 
 // Setup Sequelize
 const db = require('./db');
-// TODO models go here
+const { User, Course } = db.models;
 const { OP } = db.Sequelize;
-// TODO global models
+// global models
+global.User = User;
+global.Course = Course;
 global.OP = OP;
 
 // Authenticates if connection to database established

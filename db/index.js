@@ -11,6 +11,7 @@ const db = {
     models: {}
 }
 
-// TODO: Add models here
-// db.models.modelName = require('./models/<name>')(sequelize);
+// All models here
+db.models.User = require('./models/User')(sequelize);
+db.models.Course = require('./models/Course')(sequelize);
 module.exports = db;
