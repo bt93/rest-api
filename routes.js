@@ -67,6 +67,19 @@ router.get('/users', authenticateUser, (req, res) => {
     })
 });
 
+// GET all courses
+router.get('/courses', async (req, res) => {
+    try {
+        // Finds a lists all courses on database
+        const courses = await Course.findAll();
+
+        res.status(200).json({ courses });
+    } catch (err) {
+        res.status(404).json({errors: err});
+    }
+});
+
+// POST new user
 router.post('/users', async (req, res) => {
     try {
         // Get user from request body
@@ -84,7 +97,7 @@ router.post('/users', async (req, res) => {
         });
 
         // Sets status to 201 and ends request
-        res.status(201).end();
+        res.status(201).location('/').end();
     } catch (err) {
         // Sets status to 401 and gives error 
         res.status(401).json({ errors: err });
