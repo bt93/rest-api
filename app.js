@@ -13,6 +13,23 @@ const app = express();
 // setup morgan which gives us http request logging
 app.use(morgan('dev'));
 
+// Setup Sequelize
+const db = require('./db');
+// TODO models go here
+const { OP } = db.Sequelize;
+// TODO global models
+global.OP = OP;
+
+// Authenticates if connection to database established
+db.sequelize
+  .authenticate()
+  .then(function(err) {
+    console.log('Connection has been established successfully.');
+  })
+  .catch(function (err) {
+    console.log('Unable to connect to the database:', err);
+  });
+
 // TODO setup your api routes here
 
 // setup a friendly greeting for the root route
