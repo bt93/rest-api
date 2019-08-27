@@ -65,6 +65,30 @@ router.get('/users', authenticateUser, (req, res) => {
         lastName: user.lastName,
         emailAddress: user.emailAddress
     })
-})
+});
+
+router.post('/users', async (req, res) => {
+    try {
+        // Get user from request body
+        const user = req.body;
+
+        // Hash the password
+        user.password = bcryptjs.hashSync(user.password);
+
+        // Adds new user to database
+        await User.create({
+            firstName: user.firstName,
+            lastName: user.lastName,
+            emailAddress: user.emailAddress,
+            password: user.password
+        });
+
+        // Sets status to 201 and ends request
+        res.status(201).end();
+    } catch (err) {
+        // Sets status to 401 and gives error 
+        res.status(401).json({ errors: err });
+    }
+});
 
 module.exports = router;
