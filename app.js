@@ -32,6 +32,8 @@ db.sequelize
     console.log('Unable to connect to the database:', err);
   });
 
+(async() => await db.sequelize.sync())();
+
 // TODO setup your api routes here
 
 // setup a friendly greeting for the root route

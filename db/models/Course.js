@@ -9,10 +9,6 @@ module.exports = (sequelize) => {
             autoIncrement: true
         },
 
-        userId: {
-            type: Sequelize.INTEGER
-        },
-
         title: {
             type: Sequelize.STRING,
             allowNull: false,
