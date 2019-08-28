@@ -74,7 +74,17 @@ router.get('/users', authenticateUser, (req, res) => {
 router.get('/courses', async (req, res) => {
     try {
         // Finds a lists all courses on database
-        const courses = await Course.findAll();
+        const courses = await Course.findAll({
+            include: [{
+                model: User,
+                attributes: {
+                    exclude: ['password', 'createdAt', 'updatedAt']
+                }
+            }],
+            attributes: {
+                exclude: ['createdAt', 'updatedAt', 'userId']
+            }
+        })
 
         res.status(200).json({ courses });
     } catch (err) {
