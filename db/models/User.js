@@ -1,8 +1,8 @@
 const Sequelize = require("sequelize");
 
 module.exports = (sequelize) => {
-    class User extends Sequelize.Model {}
-    User.init({
+    class user extends Sequelize.Model {}
+    user.init({
         id: {
             type: Sequelize.INTEGER,
             primaryKey: true,
@@ -67,5 +67,5 @@ module.exports = (sequelize) => {
         sequelize
     });
 
-    return User;
+    return user;
 }

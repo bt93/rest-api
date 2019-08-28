@@ -16,8 +16,7 @@ db.models.User = require('./models/User')(sequelize);
 db.models.Course = require('./models/Course')(sequelize);
 
 // Association between two tables
-db.models.User.hasMany(db.models.Course, { 
-    as: 'user', 
+db.models.User.hasMany(db.models.Course, {  
     foreignKey: {
         feildName: 'userId',
         allowNull: false

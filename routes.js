@@ -61,7 +61,7 @@ const authenticateUser = async (req, res, next) => {
 router.get('/users', authenticateUser, (req, res) => {
     const user = req.currentUser;
     
-    
+
     res.json({
         auth: true,
         firstName: user.firstName,
@@ -79,6 +79,25 @@ router.get('/courses', async (req, res) => {
         res.status(200).json({ courses });
     } catch (err) {
         res.status(404).json({errors: err});
+    }
+});
+
+// GET one course by :id
+router.get('/courses/:id', async (req, res) => {
+    console.log(req.params);
+    try {
+        const course = await Course.findOne({
+            where: {
+                id: req.params.id
+            },
+            attributes: {
+                include: ['userId']
+            }
+        });
+
+        res.status(200).json({ course });
+    } catch (err) {
+        res.status(404).json({ message: 'Course does not exsist' });
     }
 });
 
@@ -103,7 +122,7 @@ router.post('/users', async (req, res) => {
         res.status(201).location('/').end();
     } catch (err) {
         // Sets status to 401 and gives error 
-        res.status(401).json({ errors: err });
+        res.status(400).json({ errors: err });
     }
 });
 
