@@ -29,6 +29,9 @@ const authenticateUser = async (req, res, next) => {
             if (authenticated) {
                 // If true: returns as current user
                 req.currentUser = user.dataValues;
+                delete req.currentUser.password 
+                delete req.currentUser.createdAt;
+                delete req.currentUser.updatedAt;
             } else {
                 // If false: returns Authentication failure message 
                 message = `Authentication failure for ${user.dataValues.emailAddress}`;
@@ -57,7 +60,7 @@ const authenticateUser = async (req, res, next) => {
 // GET authorized user
 router.get('/users', authenticateUser, (req, res) => {
     const user = req.currentUser;
-
+    
     
     res.json({
         auth: true,
