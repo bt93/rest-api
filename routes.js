@@ -55,7 +55,13 @@ const authenticateUser = async (req, res, next) => {
         // Returns 401 and error message
         console.warn(message);
 
-        res.status(401).json({ message: message });
+        res.status(401).json({ 
+            errors: {
+                errors: {
+                    message: message 
+                }
+            }
+         });
     } else {
         // Moves on to get request
         next();
@@ -120,11 +126,23 @@ router.get('/courses/:id', async (req, res) => {
             res.status(200).json({ course });
         } else {
             // If null: respond with 404
-            res.status(404).json({ message: 'Course does not exsist.' });
+            res.status(404).json({ 
+                errors: {
+                    errors: {
+                        message: 'Course not found.' 
+                    }
+                }
+             });
         }
     } else {
         // If false: responds with 400
-        res.status(400).json({ message: 'Course id must be a number.' });
+        res.status(400).json({ 
+            errors: {
+                errors: {
+                    message: 'Course id must be number.' 
+                }
+            }
+         });
     }
 });
 
@@ -187,6 +205,81 @@ router.post('/courses', authenticateUser, async (req, res) => {
             });
         }
         
+    } catch (err) {
+        res.status(400).json({ errors: err });
+    }
+});
+
+// PUT updates a course
+router.put('/courses/:id', authenticateUser, async (req, res) => {
+    try {
+        const user = req.currentUser;
+        const courseId = parseInt(req.params.id);
+        const newData = req.body;
+        
+        // Checks if param is number
+        if (Number.isInteger(courseId)) {
+            // If true: look for the course w/ id
+            const course = await Course.findOne({
+                where: {
+                    id: courseId
+                }
+            });
+            
+            // Checks if course exsist
+            if (course) {
+                // Checks if current user matches course.userId
+                if (course.dataValues.userId === user.id) {
+                    // If true: looks if title already exsist
+                    const duplicateCheck = await Course.findOne({
+                        where: {
+                            title: newData.title
+                        }
+                    });
+
+                    // Checks if title exsist
+                    if (!duplicateCheck) {
+                        // If null: adds title to database
+                        course.title = newData.title;
+                    }
+
+                    // Adds updates the rest of data
+                    course.description = newData.description;
+                    course.estimatedTime = newData.estimatedTime;
+                    course.materialsNeeded = newData.materialsNeeded;
+                    await course.save();
+
+                    res.status(204).location('/').end();
+                } else {
+                    // If false: user not allowed to edit
+                    res.status(401).json({ 
+                        errors: {
+                            errors: {
+                                message: 'Unauthorized to edit course.' 
+                            }
+                        }
+                    });
+                }
+            } else {
+                // If false: course isnt on database
+                res.status(404).json({ 
+                    errors: {
+                        errors: {
+                            message: 'Course not found.' 
+                        }
+                    }
+                 });
+            }
+        } else {
+            // If false: course must be number
+            res.status(400).json({ 
+                errors: {
+                    errors: {
+                        message: 'Course id must be number.' 
+                    }
+                }
+             });
+        }
     } catch (err) {
         res.status(400).json({ errors: err });
     }
