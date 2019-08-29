@@ -153,4 +153,23 @@ router.post('/users', async (req, res) => {
     }
 });
 
+router.post('/courses', authenticateUser, async (req, res) => {
+    try {
+        const user = req.currentUser;
+        const newCourse = req.body;
+
+        await Course.create({
+            title: newCourse.title,
+            description: newCourse.description,
+            estimatedTime: newCourse.estimatedTime,
+            materialsNeeded: newCourse.materialsNeeded,
+            userId: user.id
+        });
+        
+        res.status(201).location('/').end();
+    } catch (err) {
+        res.status(400).json({ errors: err });
+    }
+});
+
 module.exports = router;

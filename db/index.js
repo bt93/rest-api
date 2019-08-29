@@ -31,7 +31,8 @@ db.models.Course.belongsTo(db.models.User, {
     validate: {
         notEmpty: {
             msg: 'Must give a value for "User Id".'
-        }
+        },
+        isInt: true
     }
 });
 
