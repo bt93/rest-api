@@ -285,4 +285,59 @@ router.put('/courses/:id', authenticateUser, async (req, res) => {
     }
 });
 
+// DELETE course by :id
+router.delete('/courses/:id', authenticateUser, async (req, res) => {
+    try {
+        const courseId = parseInt(req.params.id);
+        const user = req.currentUser;
+
+        if (Number.isInteger(courseId)) {
+            const course = await Course.findOne({
+                where: {
+                    id: courseId
+                }
+            });
+            
+            if (course) {
+
+                if (course.dataValues.userId === user.id) {
+                    await Course.destroy({
+                        where: {
+                            id: courseId
+                        }
+                    });
+
+                    res.status(204).location('/').end();
+                } else {
+                    res.status(401).json({ 
+                        errors: {
+                            errors: {
+                                message: 'Unauthorized to delete course.' 
+                            }
+                        }
+                    });
+                }
+            } else {
+                res.status(404).json({ 
+                    errors: {
+                        errors: {
+                            message: 'Course not found.' 
+                        }
+                    }
+                 });
+            }
+        } else {
+            res.status(400).json({ 
+                errors: {
+                    errors: {
+                        message: 'Course id must be number.' 
+                    }
+                }
+             });
+        }
+    } catch (err) {
+        res.status(400).json({ errors: err });
+    }
+});
+
 module.exports = router;
