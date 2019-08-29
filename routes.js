@@ -198,7 +198,16 @@ router.post('/courses', authenticateUser, async (req, res) => {
                 userId: user.id
             });
 
-            res.status(201).location('/').end();
+            const courseUri = await Course.findOne({
+                where: {
+                    title: newCourse.title
+                },
+                attributes: {
+                    include: ['id']
+                }
+            });
+            
+            res.status(201).location(`/courses/${courseUri.dataValues.id}`).end();
         } else {
             // If null: gives message
             res.status(400).json({
