@@ -177,13 +177,16 @@ router.post('/courses', authenticateUser, async (req, res) => {
     try {
         const user = req.currentUser;
         const newCourse = req.body;
-
-        // Checks if there is a course w/ this title
-        const duplicateCheck = await Course.findOne({
-            where: {
-                title: newCourse.title
-            }
-        });
+        let duplicateCheck = null;
+        
+        if (newCourse.title) { 
+            // Checks if there is a course w/ this title
+            duplicateCheck = await Course.findOne({
+                where: {
+                    title: newCourse.title
+                }
+            });
+        }
 
         if (!duplicateCheck) {
             // If not Null: make new course
@@ -218,6 +221,7 @@ router.put('/courses/:id', authenticateUser, async (req, res) => {
         const user = req.currentUser;
         const courseId = parseInt(req.params.id);
         const newData = req.body;
+        const duplicateCheck = null;
         
         // Checks if param is number
         if (Number.isInteger(courseId)) {
@@ -232,20 +236,8 @@ router.put('/courses/:id', authenticateUser, async (req, res) => {
             if (course) {
                 // Checks if current user matches course.userId
                 if (course.dataValues.userId === user.id) {
-                    // If true: looks if title already exsist
-                    const duplicateCheck = await Course.findOne({
-                        where: {
-                            title: newData.title
-                        }
-                    });
-
-                    // Checks if title exsist
-                    if (!duplicateCheck) {
-                        // If null: adds title to database
-                        course.title = newData.title;
-                    }
-
                     // Adds updates the rest of data
+                    course.title = newData.title;
                     course.description = newData.description;
                     course.estimatedTime = newData.estimatedTime;
                     course.materialsNeeded = newData.materialsNeeded;
