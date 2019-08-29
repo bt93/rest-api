@@ -153,7 +153,9 @@ router.post('/users', async (req, res) => {
         const user = req.body;
 
         // Hash the password
-        user.password = bcryptjs.hashSync(user.password);
+        if (user.password) {
+            user.password = bcryptjs.hashSync(user.password);
+        }
 
         // Adds new user to database
         await User.create({
