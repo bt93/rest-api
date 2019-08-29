@@ -246,7 +246,7 @@ router.put('/courses/:id', authenticateUser, async (req, res) => {
                     res.status(204).location('/').end();
                 } else {
                     // If false: user not allowed to edit
-                    res.status(401).json({ 
+                    res.status(403).json({ 
                         errors: {
                             errors: {
                                 message: 'Unauthorized to edit course.' 
@@ -303,7 +303,7 @@ router.delete('/courses/:id', authenticateUser, async (req, res) => {
 
                     res.status(204).location('/').end();
                 } else {
-                    res.status(401).json({ 
+                    res.status(403).json({ 
                         errors: {
                             errors: {
                                 message: 'Unauthorized to delete course.' 
