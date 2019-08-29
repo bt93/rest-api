@@ -158,15 +158,35 @@ router.post('/courses', authenticateUser, async (req, res) => {
         const user = req.currentUser;
         const newCourse = req.body;
 
-        await Course.create({
-            title: newCourse.title,
-            description: newCourse.description,
-            estimatedTime: newCourse.estimatedTime,
-            materialsNeeded: newCourse.materialsNeeded,
-            userId: user.id
+        // Checks if there is a course w/ this title
+        const duplicateCheck = await Course.findOne({
+            where: {
+                title: newCourse.title
+            }
         });
+
+        if (!duplicateCheck) {
+            // If not Null: make new course
+            await Course.create({
+                title: newCourse.title,
+                description: newCourse.description,
+                estimatedTime: newCourse.estimatedTime,
+                materialsNeeded: newCourse.materialsNeeded,
+                userId: user.id
+            });
+
+            res.status(201).location('/').end();
+        } else {
+            // If null: gives message
+            res.status(400).json({
+                errors: {
+                    errors: {
+                        message: 'There is a course with that title already.'
+                    }
+                }
+            });
+        }
         
-        res.status(201).location('/').end();
     } catch (err) {
         res.status(400).json({ errors: err });
     }
