@@ -16,7 +16,8 @@ const authenticateUser = async (req, res, next) => {
         const user = await User.findOne({
             where: {
                 emailAddress: credentials.name
-            }
+            },
+            attributes: ['password']
         });
 
         // Checks if user is in database
@@ -28,13 +29,17 @@ const authenticateUser = async (req, res, next) => {
             // Checks if password matches what's on database
             if (authenticated) {
                 // If true: returns as current user
-                req.currentUser = user.dataValues;
-                delete req.currentUser.password 
-                delete req.currentUser.createdAt;
-                delete req.currentUser.updatedAt;
+                req.currentUser = await User.findOne({
+                    where: {
+                        emailAddress: credentials.name
+                    },
+                    attributes: {
+                        exclude: ['password', 'createdAt', 'updatedAt']
+                    }
+                })
             } else {
                 // If false: returns Authentication failure message 
-                message = `Authentication failure for ${user.dataValues.emailAddress}`;
+                message = `Authentication failure for ${credentials.name}`;
             }
         } else {
             // If user null: returns 'not found' message
@@ -50,7 +55,7 @@ const authenticateUser = async (req, res, next) => {
         // Returns 401 and error message
         console.warn(message);
 
-        res.status(401).json({ auth: false, message: message });
+        res.status(401).json({ message: message });
     } else {
         // Moves on to get request
         next();
@@ -62,12 +67,7 @@ router.get('/users', authenticateUser, (req, res) => {
     const user = req.currentUser;
     
 
-    res.json({
-        auth: true,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        emailAddress: user.emailAddress
-    })
+    res.json({ user })
 });
 
 // GET all courses
